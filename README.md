@@ -6,7 +6,7 @@ A **Home Assistant automation blueprint** that plays your **own recorded audio**
 
 Choose FluentPet button entities, choose Alexa **Speak** destinations (including a Home Assistant label/group of speakers), enter an HTTPS audio folder, and you're done. No custom Python and no hardcoded household-specific URLs.
 
-> **Status:** v0.1.0 blueprint candidate. Test on your own Home Assistant before treating it as production-ready. This project is independent of FluentPet, Amazon, and Home Assistant.
+> **Status:** v0.1.0 blueprint candidate. Import from public GitHub has been validated; end-to-end playback from a new blueprint instance still needs testing. This project is independent of FluentPet, Amazon, and Home Assistant.
 
 ## Dedicated to Snickers 🐾
 

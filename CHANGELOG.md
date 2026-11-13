@@ -9,4 +9,4 @@
 - Ignore replayed events and attribute-only state updates.
 - Add quickstart, example, tests, and public GitHub release package and dedication to Snickers (@puppersnickerdoodle).
 
-**Not yet validated through a public GitHub import and fresh Home Assistant install.**
+**Public GitHub import succeeded in Home Assistant; runtime playback from a newly configured blueprint instance remains untested.**

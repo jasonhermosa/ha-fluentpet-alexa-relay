@@ -6,25 +6,13 @@ A **Home Assistant automation blueprint** that plays your **own recorded audio**
 
 Choose FluentPet button entities, choose Alexa **Speak** destinations (including a Home Assistant label/group of speakers), enter an HTTPS audio folder, and you're done. No custom Python and no hardcoded household-specific URLs.
 
-> **Status:** v0.1.0 — **field-tested on Home Assistant**. Public GitHub blueprint import, creation of a new blueprint-based automation, and live Alexa audio playback have been confirmed. See [Validation](#validation). This is an independent community project, not affiliated with FluentPet, Amazon, or Home Assistant.
+> **Status:** v0.1.0 — **field-tested on Home Assistant**. Public GitHub blueprint import, creation of a new blueprint-based automation, and live Alexa audio playback have been confirmed. This is an independent community project, not affiliated with FluentPet, Amazon, or Home Assistant.
 
 ## Dedicated to Snickers 🐾
 
 I built this for **Snickers**, our mini Bernedoodle, so the words he presses on his FluentPet soundboard can be heard throughout the house. What started as a little project to help us understand him turned into something I hope other pets and their people can enjoy, too.
 
 Follow Snickers and his button-pressing adventures on Instagram: **[@puppersnickerdoodle](https://www.instagram.com/puppersnickerdoodle/)**.
-
-## Validation
-
-**Field test passed — November 12, 2026 (Pacific Time).**
-
-- Successfully imported the public GitHub blueprint into Home Assistant and created a new automation from it.
-- Selected 12 FluentPet Connect **Press** event entities and a Home Assistant label containing six Alexa Devices **Speak** notification entities.
-- Disabled the original, directly configured automation before switching the blueprint instance on; kept it for rollback.
-- A real **Love You** button press triggered the blueprint, passed its replay/press condition, rendered `FluentPet_Love_You.mp3`, dispatched the Alexa Speak notification to the selected label, and completed the configured two-second spacing delay.
-- **The owner confirmed that Alexa played the recording.**
-
-**Scope:** This confirms one successful end-to-end press-to-playback path on the owner's Home Assistant installation. It does **not** establish that every button, every individual Echo, or other households have been tested. GitHub Actions validates the blueprint structure separately.
 
 ## What it does
 

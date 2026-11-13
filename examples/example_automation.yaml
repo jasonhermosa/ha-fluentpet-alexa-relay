@@ -1,0 +1,17 @@
+# EXAMPLE ONLY: Replace the event entity IDs, label, and HTTPS URL with your own.
+# Do not enable this together with an existing automation for the same buttons,
+# or the same button press will play twice.
+- alias: FluentPet - Voice Replay on Alexa
+  use_blueprint:
+    path: jasonhermosa/fluentpet_alexa_voice_replay.yaml
+    input:
+      fluentpet_buttons:
+        - event.fluentpet_daddy_press
+        - event.fluentpet_mommy_press
+        - event.fluentpet_love_you_press
+      alexa_targets:
+        label_id: fluentpet_alexa_speakers
+      audio_base_url: https://your-domain.example/local/fluentpet/
+      filename_prefix: "FluentPet_"
+      filename_suffix: ".mp3"
+      spacing_seconds: 2

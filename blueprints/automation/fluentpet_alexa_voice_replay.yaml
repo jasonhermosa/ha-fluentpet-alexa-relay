@@ -1,0 +1,116 @@
+blueprint:
+  name: FluentPet Button Audio to Alexa Speak
+  description: >-
+    Play your own button recordings on Alexa devices when a FluentPet Connect
+    button is pressed. Select the FluentPet Press event entities and Alexa
+    Devices Speak notify entities (or a label containing them). For a button
+    named "Love You", the default filename is FluentPet_Love_You.mp3.
+
+    Requires Home Assistant 2026.10+, the FluentPet Connect integration,
+    the Alexa Devices integration, and publicly accessible HTTPS-hosted
+    Alexa-compatible MP3 files. Does not include audio files. Replayed
+    FluentPet events are ignored.
+  domain: automation
+  author: jasonhermosa
+  homeassistant:
+    min_version: "2026.10.0"
+  input:
+    fluentpet_buttons:
+      name: FluentPet button press entities
+      description: >-
+        Select the Press event entity for each FluentPet button that should
+        play a recording. Select at least one.
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - domain: event
+              integration: fluentpet
+    alexa_targets:
+      name: Alexa Speak targets
+      description: >-
+        Select Alexa Devices Speak notify entities or a Home Assistant label
+        containing those entities. Avoid Announce entities if you do not want
+        an announcement chime. Amazon may throttle many targets.
+      selector:
+        target:
+          entity:
+            - domain: notify
+              integration: alexa_devices
+    audio_base_url:
+      name: Audio folder HTTPS URL
+      description: >-
+        Publicly accessible HTTPS URL to the folder containing your MP3s,
+        such as https://your-domain.example/local/fluentpet/ . The file names
+        are added automatically; do not enter an individual MP3 URL.
+      selector:
+        text:
+          type: url
+    filename_prefix:
+      name: Recording filename prefix
+      description: 'Prepended to each button name. Default: FluentPet_'
+      default: "FluentPet_"
+      selector:
+        text:
+    filename_suffix:
+      name: Recording filename suffix
+      description: 'Usually .mp3. Default: .mp3'
+      default: ".mp3"
+      selector:
+        text:
+    spacing_seconds:
+      name: Minimum spacing between playback requests
+      description: >-
+        Seconds to wait after each send before processing another queued
+        press. May reduce bursts of requests but does not synchronize or
+        eliminate rate limiting across multiple Alexa speakers.
+      default: 2
+      selector:
+        number:
+          min: 0
+          max: 30
+          step: 1
+          mode: slider
+          unit_of_measurement: seconds
+
+variables:
+  audio_base_url: !input audio_base_url
+  filename_prefix: !input filename_prefix
+  filename_suffix: !input filename_suffix
+  spacing_seconds: !input spacing_seconds
+
+triggers:
+  - trigger: state
+    entity_id: !input fluentpet_buttons
+    # FluentPet Press entities use a timestamp as their state. Ignore changes
+    # that modify only attributes rather than recording a new press.
+    to:
+
+conditions:
+  - condition: template
+    value_template: >-
+      {{ trigger.to_state is not none
+         and trigger.to_state.attributes.get('event_type') == 'press'
+         and not trigger.to_state.attributes.get('replayed', true)
+         and trigger.to_state.attributes.get('button', {}).get('name', '') | trim != '' }}
+
+# Keep a single queue to preserve press order, instead of sending every
+# rapid-fire press at once. A long queue can still encounter Amazon limits.
+mode: queued
+max: 10
+
+# Selecting an Alexa group created in Amazon is different from selecting a HA
+# label of Speak entities. Labels dispatch individual notifications.
+actions:
+  - alias: Play the FluentPet recording
+    action: notify.send_message
+    target: !input alexa_targets
+    data:
+      message: >-
+        {%- set button_name = trigger.to_state.attributes.button.name -%}
+        {%- set stem = button_name | replace(' ', '_') -%}
+        {%- set filename = filename_prefix ~ stem ~ filename_suffix -%}
+        <audio src="{{ audio_base_url.rstrip('/') }}/{{ filename | urlencode }}"/>
+  - alias: Space out rapid presses
+    delay:
+      seconds: "{{ spacing_seconds | int(0) }}"
